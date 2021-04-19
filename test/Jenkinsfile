@@ -48,7 +48,7 @@ pipeline {
           steps {
             echo 'Deploying Frontend'
             // 프론트엔드 디렉토리의 정적파일들을 S3 에 올림, 이 전에 반드시 EC2 instance profile 을 등록해야함.
-            dir ('./website'){
+            dir ('./test/website'){
                 sh '''
                 aws s3 sync ./ s3://ysgtest
                 '''
@@ -86,7 +86,7 @@ pipeline {
             }
             
             steps {
-              dir ('./server'){
+              dir ('./test/server'){
                   sh '''
                   npm install&&
                   npm run lint
@@ -104,7 +104,7 @@ pipeline {
           steps {
             echo 'Test Backend'
 
-            dir ('./server'){
+            dir ('./test/server'){
                 sh '''
                 npm install
                 npm run test
@@ -118,7 +118,7 @@ pipeline {
           steps {
             echo 'Build Backend'
 
-            dir ('./server'){
+            dir ('./test/server'){
                 sh """
                 docker build . -t server --build-arg env=${PROD}
                 """
@@ -138,7 +138,7 @@ pipeline {
           steps {
             echo 'Build Backend'
 
-            dir ('./server'){
+            dir ('./test/server'){
                 sh '''
                 //docker rm -f $(docker ps -aq)
                 docker run -p 80:80 -d server
